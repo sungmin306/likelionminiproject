@@ -5,26 +5,26 @@ import json
 # Create your views here.
 
 
-def round(x, y, z, a, b, c):
-    x = int(x)
-    y = int(y)
-    z = int(z)
-    a = int(a)
-    b = int(b)
-    c = int(c)
-    r = (x-a)*(x-a)+(y-b)*(y-b)+(z-c)*(z-c)
+def round(x,z,a,c):
+    x=int(x)
+
+    z=int(z)
+    a=int(a)
+
+    c=int(c)
+    r= (x-a)*(x-a)+(z-c)*(z-c)
     return r
 
 
 @csrf_exempt
 def calculator(request):
     # 데이터 확인
-    x = request.GET.get('x')  # 가격
+    money = request.GET.get('money')  # 가격
     # y = request.GET.get('y')  # 맛
-    z = request.GET.get('z')  # 양
+    size = request.GET.get('size')  # 양
     drink = request.GET.get('drink')  # 술
-    delivery = request.GET.get('delivery')  # 배달
-    category = request.GET.get('category')  # 메뉴
+    place = request.GET.get('place')  # 배달
+    ctg = request.GET.get('ctg')  # 메뉴
 
     # 저장된 값.
     # ex) category 0 한식 1 일식 2중식 3양식 4치킨
@@ -125,25 +125,23 @@ def calculator(request):
         ['이백장돈까스','다양한 종류의 돈까스가 있다. 세트로 시키면 냉모밀면도 추가로 나온다.'],
         ['미가초밥','초밥집이다. 초밥집이지만 알밥이나 회덮밥도 팔고있다.'],
         ['스시어게인',',초밥집이다. 평균적인 초밥 가격보단 싼 편이고, 특히 점심특선 초밥이 싸고 양도 많다.'],
-        ['고인돌횟집'],
-        ['엄마손칼국수(돈까스)'],
-        ['교촌치킨'],
-        ['BHC'],
-        ['전설의치킨'],
-        ['미쳐버린파닭'],
-        ['BBQ'],
-        ['페리카나'],
-        ['치킨마루'],
-        ['지코바'],
+        ['고인돌횟집','모현의 유일한 횟집. 단 회 특성상 가격이 좀 되니 주의할것.'],
+        ['엄마손칼국수(돈까스)','가격도 싸고 특히 양이 많다. 맛도 준수한 편.'],
+        ['교촌치킨','달달한 치킨이 먹고싶은날 교촌'],
+        ['BHC','시원한 맥주와 먹고싶은 치킨 모현 BHC는 뭔가 좀 다른듯?'],
+        ['전설의치킨','가성비 치킨의 끝판왕!',],
+        ['미쳐버린파닭','적당한 가성비의 아는사람들끼리 먹기 너무 좋은 곳 떡볶이 피자도 팔고 개인적으로 떡볶이 짱짱'],
+        ['BBQ','필자가 생각하는 최고의 치킨 bbq 황올 사랑합니다'],
+        ['페리카나','적당한 가성비의 학교근처의 치킨 멀리안가도 되는 장점!'],
+        ['치킨마루','브랜드 치킨 말고 술과 함께 먹고싶다. 친구들끼리 먹고 싶다 했을때 아주 GOOD! 양이 매우 많음'],
+        ['지코바','치킨은 먹고싶은데..튀김은 싫다! 했을때 완벽한 선택'],
         # ['신통치킨'],
         ['모현양꼬치','양꼬치도 맛있지만 지삼선같은 요리메뉴도 맛있다.'],
         ['상원','중식집. 특히 탕수육과 짬뽕이 맛있다.'],
         ['차이나타운','중식집. 짬뽕이 맛있고 무엇보다 배달비가 무료..!'],
-        ['야미마라탕','모현에 얼마 없는 마라탕집. 마라향이 강하지 않아 마라맛을 싫어해도 먹을만 하다.']
+        ['야미마라탕','모현에 얼마 없는 마라탕집. 마라향이 강하지 않아 마라맛을 싫어해도 먹을만 하다.'],
         ['모현각','평범한 중국집. 메뉴가 다양함 제육덮밥도 맛있다고 함'],
         ['마라장룡','모현에 얼마 없는 마라탕집. 마라향도 강하고 마라탕 이외에 중국음식도 있다.'],
-
-
 
     ]
     store = ''
@@ -152,14 +150,12 @@ def calculator(request):
     shortlength = 40000
     resultnum = 6
     for i in range(len(menulist)):
-        if (menulist[i][3] == int(drink) and menulist[i][4] == int(delivery)):
-            if (menulist[i][5] == int(category)):
-                length = round(
-                    x, z, menulist[i][0], menulist[i][1])
-                # x, y, z, menulist[i][0], menulist[i][1], menulist[i][2])
-                if (shortlength >= length):
-                    shortlength = length
-                    resultnum = i
+        if(menulist[i][2]==drink and menulist[i][3]==place):
+            if(menulist[i][4]==int(ctg)):
+                length=round(money,size,menulist[i][0],menulist[i][1])
+                if(shortlength>=length):
+                    shortlength=length
+                    resultnum=i
 
     store = menuname[resultnum][0]
     explan = menuname[resultnum][1]
@@ -167,6 +163,7 @@ def calculator(request):
     dic = {}
     dic['store'] = str(store)
     dic['explan'] = str(explan)
+    print(dic)
 
     # 응답
     return JsonResponse(dic)
